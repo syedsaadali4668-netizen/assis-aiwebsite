@@ -60,6 +60,12 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    service: 'AI Development & Intelligent Systems',
+    description: ''
+  });
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -76,6 +82,18 @@ export default function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSendEmail = (e) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Project Inquiry: ${formData.service} - ${formData.name || 'New Client'}`);
+    const body = encodeURIComponent(
+      `Full Name: ${formData.name}\n` +
+      `Email Address: ${formData.email}\n` +
+      `Selected Service: ${formData.service}\n\n` +
+      `Project Description:\n${formData.description}`
+    );
+    window.location.href = `mailto:theassis.ai@gmail.com?subject=${subject}&body=${body}`;
+  };
 
   const filters = ["All", "AI Applications", "AI Agents", "SaaS Products", "Machine Learning", "Web Development"];
   const filteredProjects = activeFilter === "All" ? portfolio : portfolio.filter(p => p.category === activeFilter);
@@ -415,21 +433,39 @@ export default function App() {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className={`${theme.glass} bg-white/90 p-8 lg:p-10 border-slate-200 shadow-2xl`}>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSendEmail}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-extrabold text-[#15243A] mb-2">Full Name</label>
-                  <input type="text" className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all font-medium text-slate-800" placeholder="John Doe" />
+                  <input 
+                    type="text" 
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all font-medium text-slate-800" 
+                    placeholder="John Doe" 
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-extrabold text-[#15243A] mb-2">Email Address</label>
-                  <input type="email" className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all font-medium text-slate-800" placeholder="john@example.com" />
+                  <input 
+                    type="email" 
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all font-medium text-slate-800" 
+                    placeholder="john@example.com" 
+                  />
                 </div>
               </div>
               
               <div>
                 <label className="block text-sm font-extrabold text-[#15243A] mb-2">Select Service</label>
-                <select className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all text-slate-800 font-medium appearance-none">
+                <select 
+                  value={formData.service}
+                  onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                  className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all text-slate-800 font-medium appearance-none"
+                >
                   <option>AI Development & Intelligent Systems</option>
                   <option>AI Agents & Automation</option>
                   <option>Software & Web Development</option>
@@ -441,10 +477,17 @@ export default function App() {
 
               <div>
                 <label className="block text-sm font-extrabold text-[#15243A] mb-2">Project Description</label>
-                <textarea rows="4" className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all resize-none font-medium text-slate-800" placeholder="Tell us about your requirements..." />
+                <textarea 
+                  rows="4" 
+                  required
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-5 py-4 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3478F6] transition-all resize-none font-medium text-slate-800" 
+                  placeholder="Tell us about your requirements..." 
+                />
               </div>
 
-              <button className={`w-full py-4 rounded-xl font-extrabold text-lg ${theme.buttonGradient}`}>
+              <button type="submit" className={`w-full py-4 rounded-xl font-extrabold text-lg ${theme.buttonGradient}`}>
                 Send Inquiry
               </button>
             </form>
